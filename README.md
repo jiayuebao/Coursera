@@ -1,2 +1,3 @@
 # Exercise
-No big projects. Just for exercise.
+Just for exercise.
+Start from doing the Princeton Algorithm projects at Coursera.
