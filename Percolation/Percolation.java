@@ -35,7 +35,7 @@ public class Percolation {
 			openSite = openSite + 1;
 
 			if(row>=2 && isOpen(row-1,col)) grid.union(index,index-n);//up
-			if(row<=n-1 && isOpen(row+1,col)) grid.union(index,index-n);//down
+			if(row<=n-1 && isOpen(row+1,col)) grid.union(index,index+n);//down
 			if(col>=2 && isOpen(row,col-1)) grid.union(index,index-1);//left
 			if(col<=n-1 && isOpen(row,col+1)) grid.union(index,index+1);//right
 			
