@@ -3,7 +3,7 @@
  *  Last Updated:  7/28/2018
  *
  *  Compilation:   javac-algs4 PercolationStats.java
- *  Execution:     java-algs4 PercolationStats
+ *  Execution:     java-algs4 PercolationStats 10 200
  *  
  *  Estimate the percolation threshold using Monte Carlo simulation.
  *  1. Initialize all sites to be blocked.
