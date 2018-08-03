@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------
  *  Compilation:  javac-algs4 Point.java
- *  Execution:    java-algs4 Point
+ *  Execution:    java-algs4 Point input8.txt
  *  Dependencies: none
  *  
  *  An immutable data type for points in the plane.
@@ -13,6 +13,7 @@ import java.util.Comparator;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.In;
 
 public class Point implements Comparable<Point> {
 
@@ -108,27 +109,27 @@ public class Point implements Comparable<Point> {
      * Unit tests the Point data type.
      */
     public static void main(String[] args) {
-        Point p0 = new Point(0,0);
-        Point[] p = new Point[10];
-        for (int i = 0; i < 10; ++i) {
-            int x = StdRandom.uniform(1,100);
-            int y = StdRandom.uniform(1,100);
-            p[i] = new Point(x,y);
-            p0.drawTo(p[i]);
+        // read the n points from a file
+        In in = new In(args[0]);
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
         }
-        for (int i = 0; i < 10; ++i) {
-            StdOut.println(p[i]);
-            StdOut.println(p[i].slopeTo(p0));
-        }
-        
-        StdOut.println();
-        Arrays.sort(p);
-        for (int i = 0; i < 10; ++i)
-            StdOut.println(p[i]);
 
-        StdOut.println();
-        Arrays.sort(p, p0.slopeOrder());
-        for (int i = 0; i < 10; ++i)
-            StdOut.println(p[i]);
+        Point[] aux = Arrays.copyOf(points,points.length);
+        Arrays.sort(points);
+        for (int i = 0; i < n; i++) {
+            Point origin = points[i];
+            Arrays.sort(aux);
+            Arrays.sort(aux,origin.slopeOrder());
+            StdOut.println("points["+i+"]: "+points[i]);
+            for (int j = 0; j < n; ++j) {
+            StdOut.println(aux[j]+": "+origin.slopeTo(aux[j]));
+            }
+            StdOut.println();
+        }
     }
 }
