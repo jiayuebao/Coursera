@@ -10,45 +10,44 @@
  *  where 0 represents the blank square.
  * 
  *-------------------------------------------------------------------------*/
+import java.util.LinkedList;
+import java.util.Iterator;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.In; 
-import java.util.List;
-import java.util.ArrayList;
+
 
 public class Board {
-	private int[][] curr;
-	private int dim;
+	private final int[][] tiles;
+	private final int dim;
 	private int hamming;
 	private int manhattan;
 	private int[] blankPos = new int[2]; // the position of zero
+
 	/** construct a board from an n-by-n array of blocks */
 	public Board(int[][] blocks) {
 		dim = blocks.length;
-		curr = new int[dim][dim];
+		tiles = new int[dim][dim];
 
 		for (int i = 0; i < dim; i++) 
 			for (int j = 0; j < dim; j++) {
-				curr[i][j] = blocks[i][j];
-				if (curr[i][j] == 0) {
+				tiles[i][j] = blocks[i][j];
+				if (tiles[i][j] == 0) {
 					blankPos[0] = i;
 					blankPos[1] = j; 
 				}
 				else {
 					hamming += calHamming(i,j);
 					manhattan += calManhattan(i,j);
-				}
-				
+				}			
 			}
-
-
 	}
 
 	private Board(int[][] blocks,int hamming,int manhattan, int row, int col) {
 		dim = blocks.length;
-		curr = new int[dim][dim];
+		tiles = new int[dim][dim];
 		for (int i = 0; i < dim; i++) 
 			for (int j = 0; j < dim; j++) 
-				curr[i][j] = blocks[i][j];
+				tiles[i][j] = blocks[i][j];
 
 		this.hamming = hamming;
 		this.manhattan = manhattan;
@@ -61,13 +60,11 @@ public class Board {
 		return dim;
 	}
 
-
 	/** number of blocks out of place */
 	public int hamming() {
 		return hamming;
 	}
 
-	
 	/** sum of Manhattan distance between blocks and goal */
 	public int manhattan() {
 		return manhattan;
@@ -75,37 +72,37 @@ public class Board {
 
 	/** calculate the manhattan distance of one block */
 	private int calManhattan(int i, int j) {
-		if (curr[i][j] != i*dim+j+1) 
-			return Math.abs((curr[i][j]-1)/dim-i)+Math.abs((curr[i][j]-1)%dim-j);
+		if (tiles[i][j] != i*dim+j+1) 
+			return Math.abs((tiles[i][j]-1)/dim-i)+Math.abs((tiles[i][j]-1)%dim-j);
 		else return 0;
 	}
 
 	/** calculate the hamming distance of one block */
 	private int calHamming(int i, int j) {
-		if (curr[i][j] != i*dim+j+1) return 1;
+		if (tiles[i][j] != i*dim+j+1) return 1;
 		else return 0;
 	}
 
 	/** is this board the goal board? */
 	public boolean isGoal() {
-		return hamming == 0;
-
+		return manhattan == 0;
 	}
 
+	/** exchange a pair of block */
 	private void exch(int[][] a, int row1, int col1, int row2, int col2) {
 		int tmp = a[row1][col1];
 		a[row1][col1] = a[row2][col2];
 		a[row2][col2] = tmp;
 	}
+
 	/** a board that is obtained by exchanging any pair of blocks */
 	public Board twin() {
 		int[][] blocks = new int[dim][dim];
 		for (int i = 0; i < dim; i++)
 			for (int j = 0; j < dim; j++) {
-				blocks[i][j] = curr[i][j];
+				blocks[i][j] = tiles[i][j];
 			} 
-				
-			
+					
 		if (blocks[0][0]!=0 && blocks[0][1]!=0) {
 			exch(blocks,0,0,0,1);
 		}
@@ -123,31 +120,34 @@ public class Board {
 	}
 
 	/** does this board equal y? */
-	public boolean equals(Object y) {
-		Board that= (Board) y;
+	public boolean equals(Object other) {
+		if (other == this) return true;
+		if (other == null) return false;
+		if (other.getClass() != this.getClass()) return false;
+		Board that= (Board) other;
 		if (that.dim != dim) return false;
 		for (int i = 0; i < dim; i++) 
 			for (int j = 0; j < dim; j++) {
-				if (this.curr[i][j] != that.curr[i][j]) return false;
+				if (this.tiles[i][j] != that.tiles[i][j]) return false;
 			}
 		return true;
 
 	}
 
+	/** create a neighbor */
 	private Board neighbor(int row, int col) {
 		int[][] blocks = new int[dim][dim];
 		for (int i = 0; i < dim; i++)
 			for (int j = 0; j < dim; j++) {
-				blocks[i][j] = curr[i][j];
+				blocks[i][j] = tiles[i][j];
 			} 
-		exch(blocks, row, col, blankPos[0],blankPos[1]);
-		
+		exch(blocks, row, col, blankPos[0],blankPos[1]);		
 		return new Board(blocks);
-
 	}
+
 	/** all neighboring boards */
 	public Iterable<Board> neighbors() {
-		ArrayList<Board> neighbors = new ArrayList<>();
+		LinkedList<Board> neighbors = new LinkedList<>();
 		// add left
 		if (blankPos[1] > 0) {
 			Board left = neighbor(blankPos[0],blankPos[1]-1);
@@ -174,15 +174,21 @@ public class Board {
 
 	/** string representation of this board */
 	public String toString() {
-		String str = "";
-		for (int i = 0; i < dim; i++){
+		StringBuilder s = new StringBuilder();
+		s.append(dim + "\n");
+		String format;
+		if (dim*dim <=10) format = "%2d";
+		else if (dim*dim <=100) format = "%4d";
+		else if (dim*dim <=1000) format = "%6d";
+		else if (dim*dim <=10000) format = "%8d";
+		else format = "%10d";
+		for (int i = 0; i < dim; i++) {
 			for (int j = 0; j < dim; j++) {
-				str += curr[i][j]+ "  ";
+				s.append(String.format(format, tiles[i][j]));
 			}
-			str += "\n";
-		} 
-			
-		return str;
+			s.append("\n");
+		}		
+		return s.toString();
 	}
 
 	/** unit test */
@@ -214,12 +220,13 @@ public class Board {
     	// Test neighbor
     	StdOut.println();
     	StdOut.println("NEIGHBORS:");
-    	ArrayList<Board> neighbors = (ArrayList<Board>)initial.neighbors();
-    	for (Board neighbor:neighbors) {
+    	Iterator<Board> iterator = initial.neighbors().iterator();
+
+    	while (iterator.hasNext()){
+    		Board neighbor = iterator.next();
     		StdOut.print(neighbor.toString());
     		StdOut.println("hamming: " + neighbor.hamming());
     		StdOut.println("manhattan: " + neighbor.manhattan());
-
     		StdOut.println();
     	}
 
