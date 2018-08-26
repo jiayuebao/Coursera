@@ -1,3 +1,3 @@
 # Coursera
-Algorithms, Part I https://www.coursera.org/learn/algorithms-part1/home/welcome.
+Algorithms, Part I: https://www.coursera.org/learn/algorithms-part1/home/welcome.
 
